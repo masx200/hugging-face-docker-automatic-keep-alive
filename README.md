@@ -8,7 +8,8 @@ Cookie，有效防止服务因长时间无访问而进入休眠状态。
 
 - **定时保活**：每 30 秒自动访问目标 URL，保持服务活跃状态
 - **智能 Cookie 管理**：自动解析和更新 Cookie，处理服务器返回的会话刷新
-- **JWT Token 自动刷新**：可选的 JWT token 自动刷新功能，自动更新 URL 中的 `__sign` 参数
+- **JWT Token 自动刷新**：可选的 JWT token 自动刷新功能，自动更新 URL 中的
+  `__sign` 参数
 - **失败检测**：内置双重失败检测机制，通过检测页面内容判断服务状态
 - **配置文件支持**：支持通过 JSON 配置文件启动，优先级高于环境变量
 - **Docker 容器化**：提供完整的 Dockerfile，支持容器化部署
@@ -137,30 +138,31 @@ docker-compose logs -f
 
 ### 环境变量
 
-| 变量名                  | 描述                                                  | 是否必填 | 默认值     |
-| ----------------------- | ----------------------------------------------------- | -------- | ---------- |
-| `TARGET_URL`            | 要保活的完整 Hugging Face Space URL，包含所有查询参数 | 是*      | 无         |
-| `CURRENT_COOKIE`        | 当前的 Cookie 字符串（通常是 `spaces-jwt=...` 格式）  | 是*      | 无         |
-| `JWT_API_URL`           | JWT 刷新 API 地址                                     | 否       | 无         |
-| `JWT_COOKIE`            | JWT 刷新所需的 Cookie（包含 token 等认证信息）        | 否       | 无         |
-| `INTERVAL`              | 请求间隔时间（毫秒），最小值为 10000                  | 否       | 30000      |
-| `EXPECTED_STATUS_CODES` | 期望的 HTTP 状态码列表，多个用逗号分隔                 | 否       | `200`      |
-| `CONFIG_FILE`           | 配置文件路径                                          | 否       | 无         |
+| 变量名                  | 描述                                                  | 是否必填 | 默认值 |
+| ----------------------- | ----------------------------------------------------- | -------- | ------ |
+| `TARGET_URL`            | 要保活的完整 Hugging Face Space URL，包含所有查询参数 | 是*      | 无     |
+| `CURRENT_COOKIE`        | 当前的 Cookie 字符串（通常是 `spaces-jwt=...` 格式）  | 是*      | 无     |
+| `JWT_API_URL`           | JWT 刷新 API 地址                                     | 否       | 无     |
+| `JWT_COOKIE`            | JWT 刷新所需的 Cookie（包含 token 等认证信息）        | 否       | 无     |
+| `INTERVAL`              | 请求间隔时间（毫秒），最小值为 10000                  | 否       | 30000  |
+| `EXPECTED_STATUS_CODES` | 期望的 HTTP 状态码列表，多个用逗号分隔                | 否       | `200`  |
+| `CONFIG_FILE`           | 配置文件路径                                          | 否       | 无     |
 
 *注意：如果使用配置文件，这些变量可以省略。
 
 ### 配置文件字段
 
-| 字段名                  | 描述                                                  | 是否必填 | 默认值     |
-| ----------------------- | ----------------------------------------------------- | -------- | ---------- |
-| `targetUrl`             | 要保活的完整 Hugging Face Space URL                   | 是       | 无         |
-| `currentCookie`         | 当前的 Cookie 字符串                                  | 是       | 无         |
-| `jwtApiUrl`             | JWT 刷新 API 地址（可选）                             | 否       | 无         |
-| `jwtCookie`             | JWT 刷新所需的 Cookie（可选）                         | 否       | 无         |
-| `interval`              | 请求间隔时间（毫秒）                                  | 否       | 30000      |
-| `expectedStatusCodes`   | 期望的 HTTP 状态码数组                                | 否       | [200]      |
+| 字段名                | 描述                                | 是否必填 | 默认值 |
+| --------------------- | ----------------------------------- | -------- | ------ |
+| `targetUrl`           | 要保活的完整 Hugging Face Space URL | 是       | 无     |
+| `currentCookie`       | 当前的 Cookie 字符串                | 是       | 无     |
+| `jwtApiUrl`           | JWT 刷新 API 地址（可选）           | 否       | 无     |
+| `jwtCookie`           | JWT 刷新所需的 Cookie（可选）       | 否       | 无     |
+| `interval`            | 请求间隔时间（毫秒）                | 否       | 30000  |
+| `expectedStatusCodes` | 期望的 HTTP 状态码数组              | 否       | [200]  |
 
 **示例**：
+
 - 设置单个状态码：`export EXPECTED_STATUS_CODES=200`
 - 设置多个状态码：`export EXPECTED_STATUS_CODES=200,301,302`
 

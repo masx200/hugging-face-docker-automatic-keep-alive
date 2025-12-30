@@ -93,7 +93,8 @@ Required:
 Optional:
 
 - `INTERVAL` - Request interval in milliseconds (default: 30000)
-- `EXPECTED_STATUS_CODES` - Comma-separated list of expected HTTP status codes (default: "200")
+- `EXPECTED_STATUS_CODES` - Comma-separated list of expected HTTP status codes
+  (default: "200")
 
 Example: `EXPECTED_STATUS_CODES=200,301,302`
 

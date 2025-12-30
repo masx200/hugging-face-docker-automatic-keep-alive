@@ -104,7 +104,8 @@ const CONFIG: Config = {
   spaceUrl: fileConfig.spaceUrl || env.SPACE_URL || "",
   targetUrl: fileConfig.targetUrl || env.TARGET_URL || "",
   cookie: fileConfig.cookie || env.CURRENT_COOKIE || "",
-  interval: fileConfig.interval || (env.INTERVAL ? parseInt(env.INTERVAL, 10) : 30000),
+  interval: fileConfig.interval ||
+    (env.INTERVAL ? parseInt(env.INTERVAL, 10) : 30000),
   expectedStatusCodes: fileConfig.expectedStatusCodes ||
     (env.EXPECTED_STATUS_CODES
       ? env.EXPECTED_STATUS_CODES.split(",").map((code) => parseInt(code, 10))
@@ -246,9 +247,9 @@ function serializeCookie(url: string): string {
 
   if (!domain || !cookieStorage[domain]) {
     // 如果没有找到对应域名的 Cookie，返回空字符串
+    console.warn(`⚠️ 未找到域名 [${domain}] 的 Cookie`);
     return "";
   }
-
   // 使用 stringifyCookie 将对象序列化为 Cookie header 字符串
   return cookie.stringifyCookie(cookieStorage[domain]);
 }
@@ -270,6 +271,8 @@ function updateCookies(url: string, setCookieHeaders: string[]): void {
     cookieStorage[domain] = {};
   }
 
+  let updateCount = 0;
+
   for (const setCookieHeader of setCookieHeaders) {
     try {
       // 使用 parseSetCookie 解析 Set-Cookie header 字符串
@@ -277,14 +280,26 @@ function updateCookies(url: string, setCookieHeaders: string[]): void {
 
       // 提取有效的Cookie键值对
       if (parsed.name && parsed.value) {
+        const oldValue = cookieStorage[domain][parsed.name];
         cookieStorage[domain][parsed.name] = parsed.value;
+        updateCount++;
+
+        // 只在值真正改变时记录
+        if (oldValue !== parsed.value) {
+          const valuePreview = parsed.value.length > 50
+            ? `${parsed.value.substring(0, 50)}...`
+            : parsed.value;
+          console.log(`  ✅ 更新Cookie: ${parsed.name} = ${valuePreview}`);
+        }
       }
     } catch (error) {
-      console.warn("⚠️ 解析Set-Cookie失败：", setCookieHeader);
+      console.warn(`  ⚠️ 解析Set-Cookie失败：${error}`);
     }
   }
 
-  console.log(`🍪 已更新域名 [${domain}] 的 Cookie`);
+  if (updateCount > 0) {
+    console.log(`🍪 已更新域名 [${domain}] 的 ${updateCount} 个Cookie`);
+  }
 }
 
 // ==================== iframe URL 提取 ====================
@@ -351,15 +366,22 @@ async function getIframeUrl(): Promise<string | null> {
 
     // 处理服务器返回的Cookie更新
     const setCookieHeaders = response.headers["set-cookie"];
-    if (setCookieHeaders && Array.isArray(setCookieHeaders)) {
-      console.log(`[${timestamp}] 🍪 检测到Cookie更新`);
-      updateCookies(CONFIG.spaceUrl, setCookieHeaders);
+    if (setCookieHeaders) {
+      // undici 可能返回 string 或 string[]
+      const headers = Array.isArray(setCookieHeaders)
+        ? setCookieHeaders
+        : [setCookieHeaders];
+      if (headers.length > 0) {
+        updateCookies(CONFIG.spaceUrl, headers);
+      }
     }
 
     const html = await response.body.text();
 
     if (response.statusCode !== 200) {
-      console.error(`[${timestamp}] ❌ 获取 Space 页面失败：HTTP ${response.statusCode}`);
+      console.error(
+        `[${timestamp}] ❌ 获取 Space 页面失败：HTTP ${response.statusCode}`,
+      );
       return null;
     }
 
@@ -415,10 +437,14 @@ async function keepAlive(): Promise<void> {
     // 如果无法从 Space 页面获取 URL，使用 TARGET_URL 作为备用
     if (!targetUrl) {
       if (CONFIG.targetUrl) {
-        console.log(`[${timestamp}] ⚠️ 无法从 Space 页面提取 iframe URL，使用备用 TARGET_URL`);
+        console.log(
+          `[${timestamp}] ⚠️ 无法从 Space 页面提取 iframe URL，使用备用 TARGET_URL`,
+        );
         targetUrl = CONFIG.targetUrl;
       } else {
-        console.error(`[${timestamp}] ❌ 无法获取 iframe URL 且未配置 TARGET_URL，跳过本次保活`);
+        console.error(
+          `[${timestamp}] ❌ 无法获取 iframe URL 且未配置 TARGET_URL，跳过本次保活`,
+        );
         return;
       }
     }
@@ -443,9 +469,14 @@ async function keepAlive(): Promise<void> {
 
     // 处理服务器返回的Cookie更新
     const setCookieHeaders = response.headers["set-cookie"];
-    if (setCookieHeaders && Array.isArray(setCookieHeaders)) {
-      console.log(`[${timestamp}] 🍪 检测到Cookie更新`);
-      updateCookies(targetUrl, setCookieHeaders);
+    if (setCookieHeaders) {
+      // undici 可能返回 string 或 string[]
+      const headers = Array.isArray(setCookieHeaders)
+        ? setCookieHeaders
+        : [setCookieHeaders];
+      if (headers.length > 0) {
+        updateCookies(targetUrl, headers);
+      }
     }
 
     // 读取响应体
@@ -468,7 +499,9 @@ async function keepAlive(): Promise<void> {
       console.warn(
         `[${timestamp}] 期望状态码：${CONFIG.expectedStatusCodes.join(", ")}`,
       );
-      console.warn(`[${timestamp}] 响应体：${responseBody.substring(0, 200)}...`);
+      console.warn(
+        `[${timestamp}] 响应体：${responseBody.substring(0, 200)}...`,
+      );
     } else {
       console.log(
         `[${timestamp}] ✅ 保活成功：HTTP状态码 ${response.statusCode}`,
