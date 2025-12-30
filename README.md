@@ -138,14 +138,15 @@ docker-compose logs -f
 
 | 变量名                  | 描述                                                  | 是否必填 | 默认值 |
 | ----------------------- | ----------------------------------------------------- | -------- | ------ |
-| `SPACE_URL`             | Hugging Face Space 页面 URL                            | 否*      | 无     |
+| `SPACE_URL`             | Hugging Face Space 页面 URL                           | 否*      | 无     |
 | `TARGET_URL`            | 要保活的完整 Hugging Face Space URL，包含所有查询参数 | 否*      | 无     |
 | `CURRENT_COOKIE`        | 当前的 Cookie 字符串（通常是 `spaces-jwt=...` 格式）  | 是       | 无     |
 | `INTERVAL`              | 请求间隔时间（毫秒），最小值为 10000                  | 否       | 30000  |
 | `EXPECTED_STATUS_CODES` | 期望的 HTTP 状态码列表，多个用逗号分隔                | 否       | `200`  |
 | `CONFIG_FILE`           | 配置文件路径                                          | 否       | 无     |
 
-*注意：`SPACE_URL` 和 `TARGET_URL` 至少需要设置一个。如果设置了 `SPACE_URL`，工具会自动从页面提取 iframe URL 进行访问。
+*注意：`SPACE_URL` 和 `TARGET_URL` 至少需要设置一个。如果设置了
+`SPACE_URL`，工具会自动从页面提取 iframe URL 进行访问。
 
 ### 配置文件字段
 
@@ -157,7 +158,8 @@ docker-compose logs -f
 | `interval`            | 请求间隔时间（毫秒）                | 否       | 30000  |
 | `expectedStatusCodes` | 期望的 HTTP 状态码数组              | 否       | [200]  |
 
-*注意：`spaceUrl` 和 `targetUrl` 至少需要设置一个。推荐设置 `spaceUrl`，让工具自动提取 iframe URL。
+*注意：`spaceUrl` 和 `targetUrl` 至少需要设置一个。推荐设置
+`spaceUrl`，让工具自动提取 iframe URL。
 
 **示例**：
 
@@ -242,15 +244,15 @@ hugging-face-docker-automatic-keep-alive/
 
 ## 依赖说明
 
-| 依赖               | 版本      | 用途                              |
-| ------------------ | --------- | --------------------------------- |
-| `undici`           | ^7.16.0   | HTTP/1.1 客户端（Node.js 原生）   |
-| `cookie`           | 1.1.1     | Cookie 解析库                     |
-| `cheerio`          | ^1.0.0    | HTML 解析，用于提取 iframe URL    |
-| `@types/cookie`    | ^0.6.0    | Cookie 类型定义                   |
-| `@types/node`      | ^20.19.27 | Node.js 类型定义                  |
-| `tsx`              | ^4.19.0   | TypeScript 执行环境（支持 ESM）   |
-| `typescript`       | ^5.0.0    | TypeScript 编译器                  |
+| 依赖            | 版本      | 用途                            |
+| --------------- | --------- | ------------------------------- |
+| `undici`        | ^7.16.0   | HTTP/1.1 客户端（Node.js 原生） |
+| `cookie`        | 1.1.1     | Cookie 解析库                   |
+| `cheerio`       | ^1.0.0    | HTML 解析，用于提取 iframe URL  |
+| `@types/cookie` | ^0.6.0    | Cookie 类型定义                 |
+| `@types/node`   | ^20.19.27 | Node.js 类型定义                |
+| `tsx`           | ^4.19.0   | TypeScript 执行环境（支持 ESM） |
+| `typescript`    | ^5.0.0    | TypeScript 编译器               |
 
 ## 常见问题
 

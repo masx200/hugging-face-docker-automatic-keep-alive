@@ -250,6 +250,7 @@ function serializeCookie(url: string): string {
     console.warn(`⚠️ 未找到域名 [${domain}] 的 Cookie`);
     return "";
   }
+  console.log(JSON.stringify(cookieStorage, null, 4));
   // 使用 stringifyCookie 将对象序列化为 Cookie header 字符串
   return cookie.stringifyCookie(cookieStorage[domain]);
 }
@@ -299,6 +300,7 @@ function updateCookies(url: string, setCookieHeaders: string[]): void {
 
   if (updateCount > 0) {
     console.log(`🍪 已更新域名 [${domain}] 的 ${updateCount} 个Cookie`);
+    console.log(JSON.stringify(cookieStorage, null, 4));
   }
 }
 
