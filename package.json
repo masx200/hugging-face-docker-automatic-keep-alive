@@ -24,7 +24,7 @@
   "dependencies": {
     "cheerio": "^1.1.2",
     "cookie": "1.1.1",
-    "undici": "^7.16.0"
+    "undici": "^7.18.2"
   },
   "devDependencies": {
     "@types/cookie": "^0.6.0",
